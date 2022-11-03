@@ -1,9 +1,12 @@
 from tkinter import Tk, Label, Button, Entry, Menu, Toplevel, Frame, StringVar
+from Tree import *
+from notaciones import *
+from notacion import *
 
 rootWindow = Tk()
 
 rootWindow.title("Calculadora")
-rootWindow.geometry("500x500")
+rootWindow.geometry("900x600")
 rootWindow.configure(bg='black')
 boton = ""
 calculo = StringVar()
@@ -16,18 +19,13 @@ def digito(num):
 
 
 def igual():
-    try:
-        global boton
-        total = str(eval(boton))
-        calculo.set(total)
-        boton = ""
-    except:
-
-        calculo.set(" error ")
+    global tree
+    datosRespuesta.insert(0, str(tree.calcular()))
 
 
 def limpiar():
     calculo.set("")
+    datos.insert(0, "")
 
 
 def donothing():
@@ -36,6 +34,20 @@ def donothing():
     button.pack()
 
 
+def mostrar_arbol():
+    global tree
+    expresion = datos.get()
+    notacion = notationConversion(expresion)
+    inorden = notacion.sinCorchetes()
+    preorden = notacion.infixToPrefix()
+    txtResult1["text"] = preorden
+    txtResult2["text"] = inorden
+    tree.generarArbol(inorden, preorden)
+    tree.dibujar()
+
+
+frame1 = Frame(rootWindow, bg="white")
+tree = Tree(frame1)
 menuBar = Menu(rootWindow, background='blue', fg='white')
 fileMenu = Menu(menuBar, tearoff=0, bg='black', fg='white')
 fileMenu.add_command(label="New", command=donothing)
@@ -47,7 +59,7 @@ fileMenu.add_command(label="Salir", command=rootWindow.quit)
 menuBar.add_cascade(label="Funciones", menu=fileMenu)
 
 rootWindow.config(menu=menuBar)
-
+frame1.place(relx=0.55, rely=0.29)
 btnCero = Button(rootWindow, text="0", bg='black', fg='white', command=lambda: digito(0))
 btnUno = Button(rootWindow, text="1", bg='black', fg='white', command=lambda: digito(1))
 btnDos = Button(rootWindow, text="2", bg='black', fg='white', command=lambda: digito(2))
@@ -66,22 +78,27 @@ btnMenos = Button(rootWindow, text="-", bg='black', fg='white', command=lambda: 
 btnMultiplicacion = Button(rootWindow, text="x", bg='black', fg='white', command=lambda: digito("*"))
 btnC = Button(rootWindow, text="C", bg='black', fg='white', command=limpiar)
 btnIgual = Button(rootWindow, text="=", bg='black', fg='white', command=igual)
-border_color = Frame(rootWindow, background="white")
-datos = Label(border_color, textvariable=calculo, bg='black', fg='white')
-# lblResultado = Label(border_color)
+btnMostrarArbol = Button(rootWindow, text="Mostrar", bg='black', fg='white', command=mostrar_arbol)
+datos = Entry(rootWindow, textvariable=calculo, bg='black', fg='white', font=('Segeo UI', 18))
+datosRespuesta = Entry(rootWindow, bg='black', fg='white', font=('Segeo UI', 18))
+txtResult1 = Label(rootWindow, bg="green", fg="yellow", bd="5", font=('Segeo UI', 10))
+txtResult2 = Label(rootWindow, bg="green", fg="yellow", bd="5", font=('Segeo UI', 10))
+
+dx = 0.12
+dy = 0.3
 
 btnParentesisIzq.place(relx=0.05, rely=0.77, relwidth=0.1, relheight=0.1)
 btnCero.place(relx=0.17, rely=0.77, relwidth=0.1, relheight=0.1)
 btnParentesisDer.place(relx=0.29, rely=0.77, relwidth=0.1, relheight=0.1)
 
-btnMas.place(relx=0.05, rely=0.17, relwidth=0.1, relheight=0.1)
+btnMas.place(relx=0.41, rely=0.41, relwidth=0.1, relheight=0.1)
 btnDivision.place(relx=0.05, rely=0.29, relwidth=0.1, relheight=0.1)
 
-btnMenos.place(relx=0.17, rely=0.17, relwidth=0.1, relheight=0.1)
+btnMenos.place(relx=0.41, rely=0.53, relwidth=0.1, relheight=0.1)
 btnMultiplicacion.place(relx=0.17, rely=0.29, relwidth=0.1, relheight=0.1)
 
 btnIgual.place(relx=0.29, rely=0.29, relwidth=0.1, relheight=0.1)
-btnC.place(relx=0.29, rely=0.17, relwidth=0.1, relheight=0.1)
+btnC.place(relx=0.41, rely=0.29, relwidth=0.1, relheight=0.1)
 
 btnSiete.place(relx=0.05, rely=0.41, relwidth=0.1, relheight=0.1)
 btnCuatro.place(relx=0.05, rely=0.53, relwidth=0.1, relheight=0.1)
@@ -95,7 +112,11 @@ btnNueve.place(relx=0.29, rely=0.41, relwidth=0.1, relheight=0.1)
 btnSeis.place(relx=0.29, rely=0.53, relwidth=0.1, relheight=0.1)
 btnTres.place(relx=0.29, rely=0.65, relwidth=0.1, relheight=0.1)
 
-border_color.place(relx=0.45, rely=0.17, relwidth=0.5, relheight=0.7)
-datos.place(relx=0.007, rely=0.007, relwidth=0.983, relheight=0.983)
+btnMostrarArbol.place(relx=0.41, rely=0.65, relwidth=0.1, relheight=0.22)
+
+datos.place(relx=0.05, rely=0.06, relwidth=0.468, relheight=0.1)
+datosRespuesta.place(relx=0.05, rely=0.89, relwidth=0.468, relheight=0.1)
+txtResult1.place(relx=0.55, rely=0.06, relwidth=0.40, relheight=0.07)
+txtResult2.place(relx=0.55, rely=0.14, relwidth=0.40, relheight=0.07)
 
 rootWindow.mainloop()
